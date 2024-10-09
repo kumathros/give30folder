@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome to Give It 30</h1>
+    {% if user.is_authenticated %}
+        <p>You at least paid attention {{ count }} times.</p>
+        <form method="post" action="{% url 'give_it_30' %}">
+            {% csrf_token %}
+            <button type="submit">I Gave 30</button>
+        </form>
+    {% else %}
+        <p>Please <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a>.</p>
+    {% endif %}
+{% endblock %}
