@@ -37,10 +37,10 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes', '
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h.strip()]
-    if not ALLOWED_HOSTS:
-        # Fail-safe to avoid accidental empty hosts in production
-        raise ValueError('DJANGO_ALLOWED_HOSTS must be set when DEBUG is False')
+    ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*.onrender.com').split(',') if h.strip()]
+    # Add common Render patterns if not specified
+    if not any('onrender.com' in host for host in ALLOWED_HOSTS):
+        ALLOWED_HOSTS.extend(['*.onrender.com', 'localhost', '127.0.0.1'])
 
 
 # Application definition
@@ -163,6 +163,35 @@ if _csrf_trusted:
 
 # WhiteNoise static file serving configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Logging configuration for production debugging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
