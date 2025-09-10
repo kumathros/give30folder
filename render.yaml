@@ -2,8 +2,10 @@ services:
   - type: web
     name: myproject
     env: python
+    region: oregon
+    plan: free
     buildCommand: "./build.sh"
-    startCommand: "cd myproject && gunicorn --bind 0.0.0.0:$PORT myproject.wsgi:application"
+    startCommand: "cd myproject && gunicorn --bind 0.0.0.0:$PORT --workers 1 myproject.wsgi:application"
     envVars:
       - key: DJANGO_DEBUG
         value: False
