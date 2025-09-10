@@ -87,7 +87,20 @@ gunicorn --bind 0.0.0.0:8000 --workers 2 myproject.wsgi:application
 2. Set environment variables in Heroku dashboard
 3. Add PostgreSQL addon: `heroku addons:create heroku-postgresql:mini`
 
-### Railway/Render
+### Render
+1. Connect your GitHub repository
+2. Render will automatically detect `render.yaml` configuration
+3. The PostgreSQL database will be created automatically
+4. Deploy automatically on git push
+
+**Manual Render Setup (if not using render.yaml):**
+1. Create new Web Service
+2. Build Command: `./build.sh`
+3. Start Command: `cd myproject && gunicorn --bind 0.0.0.0:$PORT myproject.wsgi:application`
+4. Add PostgreSQL database
+5. Set `DATABASE_URL` environment variable to the database connection string
+
+### Railway
 1. Connect your GitHub repository
 2. Set environment variables in dashboard
 3. Deploy automatically on git push
