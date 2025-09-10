@@ -31,16 +31,29 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-*e+!mta$d23(*%
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Control via DJANGO_DEBUG env var (True/False). Defaults to True for local dev.
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes', 'on')
+debug_env = os.environ.get('DJANGO_DEBUG', 'True')
+DEBUG = debug_env.lower() in ('1', 'true', 'yes', 'on')
+print(f"DEBUG: DJANGO_DEBUG env var: '{debug_env}', DEBUG setting: {DEBUG}")
 
 # Hosts list controlled via DJANGO_ALLOWED_HOSTS (comma-separated). In DEBUG allow all.
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    ALLOWED_HOSTS = [h.strip() for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '*.onrender.com').split(',') if h.strip()]
-    # Add common Render patterns if not specified
-    if not any('onrender.com' in host for host in ALLOWED_HOSTS):
-        ALLOWED_HOSTS.extend(['*.onrender.com', 'localhost', '127.0.0.1'])
+    # Get ALLOWED_HOSTS from environment variable
+    allowed_hosts_env = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+    print(f"DEBUG: DJANGO_ALLOWED_HOSTS env var: '{allowed_hosts_env}'")
+    
+    if allowed_hosts_env:
+        ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(',') if h.strip()]
+    else:
+        # Fallback if no environment variable is set
+        ALLOWED_HOSTS = ['give30folder.onrender.com', '*.onrender.com', 'localhost', '127.0.0.1']
+    
+    # Always ensure our specific domain is included
+    if 'give30folder.onrender.com' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.insert(0, 'give30folder.onrender.com')
+    
+    print(f"DEBUG: Final ALLOWED_HOSTS: {ALLOWED_HOSTS}")
 
 
 # Application definition
